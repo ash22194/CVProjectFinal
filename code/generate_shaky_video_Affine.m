@@ -5,10 +5,14 @@ if ~(in==0||1)
     fprintf('Check number of inputs\n');
     return;
 end
+if ischar(filename)
 a = mmread(filename);
 framerate = a.rate;
 vid = zeros(a.height,a.width,a.nrFramesTotal);
-T = zeros(3,3,a.nrFramesTotal);
+T = zeros(a.nrFramesTotal,2);
+else
+vid = zeros(size(filename));   
+end
 fprintf('Generating shaky video : Affine\n');
 for i=1:a.nrFramesTotal 
     b = rgb2gray(a.frames(i).cdata); 
