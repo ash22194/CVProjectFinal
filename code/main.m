@@ -2,7 +2,7 @@ clear;
 close all hidden;
 motion = 3;
 % filename = '../data/aerialseq.avi';
-load('../data/aerialseq.mat');
+load('../data/data/aerialseq.mat');
 filename = frames;
 if motion==1
     [shaky_vid,T_shaky] = generate_shaky_video_TranslationOnly(filename);
