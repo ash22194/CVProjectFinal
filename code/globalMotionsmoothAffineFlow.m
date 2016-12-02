@@ -1,5 +1,6 @@
 function [frames_smooth,T_sm,T_sh] = globalMotionsmoothAffineFlow(frames,neighbourhood,varargin)
-
+sstep = 8;
+sigmaXY = 4;
 sigma = neighbourhood;
 if length(varargin) > 1
     fprintf('Check number of arguments!\n');
@@ -24,7 +25,7 @@ frames_ = double(frames)/256;
         T = zeros(3,3);
         for j = 1:1:length(neighbours)
            M = affine_flow('image1',frames_(:,:,i),'image2',frames_(:,:,i+neighbours(j)),...
-               'sigmaXY',4,'sampleStep',10);
+               'sigmaXY',sigmaXY,'sampleStep',sstep);
            M_f = M.findFlow;
            M_fs = M_f.flowStruct;
 %            M = affine_flow.matrix(M);
@@ -45,7 +46,7 @@ frames_ = double(frames)/256;
         T = zeros(3,3);
         for j = 1:1:length(neighbours)
             M = affine_flow('image1',frames_(:,:,i),'image2',frames_(:,:,neighbours(j)),...
-               'sigmaXY',4,'sampleStep',10);
+               'sigmaXY',sigmaXY,'sampleStep',sstep);
            M_f = M.findFlow;
            M_fs = M_f.flowStruct;
 %            M = affine_flow.matrix(M);
@@ -68,7 +69,7 @@ frames_ = double(frames)/256;
         T = zeros(3,3);
         for j = 1:1:length(neighbours)
            M = affine_flow('image1',frames_(:,:,i),'image2',frames_(:,:,i+neighbours(j)),...
-               'sigmaXY',4,'sampleStep',10);
+               'sigmaXY',sigmaXY,'sampleStep',sstep);
            M_f = M.findFlow;
            M_fs = M_f.flowStruct;
 %            M = affine_flow.matrix(M);
