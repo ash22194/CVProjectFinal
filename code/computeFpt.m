@@ -3,10 +3,10 @@ neighborPixels = [1,1;-1,-1;-1,1;1,-1;1,0;-1,0;0,1;0,-1];
 FFlow = estimate_flow_interface(frame,frame2);
 wSum = zeros(size(frame,1),size(frame,2));
 F = zeros(size(frame,1),size(frame,2),2);
-EPSILON = 0.001;
+EPSILON = 0.0001;
 %% TODO, I should make sure that the pixels are not missing when computing ItPrime
 for i=[1:size(neighborPixels,1)]
-    % align flow at q with p
+    % align flow at q with  p
     Fq = circshift(FFlow,[-neighborPixels(i,1) -neighborPixels(i,2)]);
     F1 = Fq(:,:,1);F2 = Fq(:,:,2);
     [gradientF1x,gradientF1y] = gradient(F1);
@@ -22,29 +22,33 @@ for i=[1:size(neighborPixels,1)]
     
     %% pseudosimilarity 
     [x,y] = meshgrid ([1:size(frame,2)],[1:size(frame,1)]);
-    x = round(x + Fq(:,:,1));
-    y = round(y + Fq(:,:,2));
+    x = sign(x + Fq(:,:,1)).*max(abs(ceil(x + Fq(:,:,1))),abs(floor(x + Fq(:,:,1)))); 
+    y = sign(y + Fq(:,:,2)).*max(abs(ceil(y + Fq(:,:,2))),abs(floor(y + Fq(:,:,2))));
+%     x = round(x + Fq(:,:,1)); 
+%     y = round(y + Fq(:,:,2));
     
     x(x > size(frame,2) | y > size(frame,1) | ...
         x <= 0 | y <= 0 ) = 1;
     y(x > size(frame,2) | y > size(frame,1) | ...
         x <= 0 | y <= 0 ) = 1;
     
-    indices = sub2ind([size(frame,2),size(frame,1)], x , y);
+    indices = sub2ind([size(frame,1),size(frame,2)], y , x);
     ItPrimeQPp_q = frame2(indices);
     
     [x,y] = meshgrid ([1:size(frame,2)],[1:size(frame,1)]);
     x = x + neighborPixels(i,1);
-    x = round(x + Fq(:,:,1));
+    x = sign(x + Fq(:,:,1)).*max(abs(ceil(x + Fq(:,:,1))),abs(floor(x + Fq(:,:,1)))); 
+%     x = round(x + Fq(:,:,1)); 
     y = y + neighborPixels(i,2);
-    y = round(y + Fq(:,:,2));
+    y = sign(y + Fq(:,:,2)).*max(abs(ceil(y + Fq(:,:,2))),abs(floor(y + Fq(:,:,2)))); 
+%     y = round(y + Fq(:,:,2));
     
     x(x > size(frame,2) | y > size(frame,1) | ...
         x <= 0 | y <= 0 ) = 1;
     y(x > size(frame,2) | y > size(frame,1) | ...
         x <= 0 | y <= 0 ) = 1;
     
-    indices = sub2ind([size(frame,2),size(frame,1)], x , y);
+    indices = sub2ind([size(frame,1),size(frame,2)], y , x);
     ItPrimeQP = frame2(indices);
     
     c = 1./( sqrt((ItPrimeQPp_q-ItPrimeQP).^2)+ EPSILON);
