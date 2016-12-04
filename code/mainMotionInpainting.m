@@ -1,11 +1,10 @@
 % Local Motion estimation
-
 % load('../results/Translation_8.mat')
 THRESHOLD = 0.1;
 EPSILON = 0.3;
 BOUNDARY = 30;
-neighbourhood = 6;
-numOfPasses = 5;
+neighbourhood = 3;
+numOfPasses = 1;
 
 addpath(genpath('optical_flow'));
 addpath(genpath('affine_flow'));
@@ -21,10 +20,15 @@ frames = im2double(mosaicVid); %% inpaintVid
 neighbors = [-neighbourhood:1:neighbourhood];
 figure
 
-for lll=[1:17]
-    imshow(frames(:,:,lll));
-    pause(4.0)  
-end
+% original = shaky_vid_{4};
+
+% for lll=[1:18]    
+%     subplot 121
+%     imshow(motionInpaint(:,:,lll));
+%     subplot 122
+%     imshow(frames(:,:,lll))
+%     pause(0.1) 
+% end
 %% motion inpainting
 mask = []; 
 motionInpaint = [];
@@ -55,7 +59,7 @@ for k = [1:numOfPasses]
         [minE,minIndex] = sort(error(error ~= 0));
         minIndex = minIndex + sum(error == 0);
 
-    for j=[1:size(minIndex,1)]
+    for j=[1:size(minIndex,2)]
         minnI = minIndex(j);
         F = computeFpt(frames(:,:,t),frames(:,:,sortedNeighbors(minnI)));
         nextFrame = frames(:,:,sortedNeighbors(minnI));
@@ -112,9 +116,6 @@ end
     imshow((intensityInpaint))
     frames(:,:,t) = intensityInpaint(:,:,1);
     t
-    if t == 30
-        disp('30')
-    end
 end
-save('inpaintedFrames_50Passes_18Frames.mat','frames','mask','motionInpaint'); %% strcat(strcat('inpaintedFrames_',num2str(m)),'.mat')
+save('inpaintedFrames_5Passes_aerialseq.mat','frames','mask','motionInpaint'); %% strcat(strcat('inpaintedFrames_',num2str(m)),'.mat')
 % end
